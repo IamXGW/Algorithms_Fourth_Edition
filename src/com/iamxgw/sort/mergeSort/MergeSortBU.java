@@ -58,7 +58,8 @@ public class MergeSortBU {
     }
 
     public static void main(String[] args) {
-        Integer[] arr = SortHelper.generateRandomArray(100000, 0, 100000);
+        Integer[] arr = SortHelper.generateRandomArray(100000, 0, 12);
+//        Integer[] arr = SortHelper.generateNearlyOrderedArray(100000, 10);
         Integer[] arr1 = Arrays.copyOf(arr, arr.length);
         Integer[] arr2 = Arrays.copyOf(arr, arr.length);
         SortHelper.testSort("com.iamxgw.sort.mergeSort.MergeSort", arr);
