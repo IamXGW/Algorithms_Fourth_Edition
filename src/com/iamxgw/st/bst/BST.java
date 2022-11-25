@@ -1,9 +1,7 @@
 package com.iamxgw.st.bst;
 
-import java.rmi.Remote;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Iterator;
 
 public class BST<Key extends Comparable<Key>, Value> {
     private class Node {
@@ -37,7 +35,7 @@ public class BST<Key extends Comparable<Key>, Value> {
 
     public void insert(Key key, Value val) {
         root = insertRecursion(root, key, val);
-//        insertLoop(root, key, val);
+//        insertLoop(key, val);
     }
 
     /**
@@ -68,16 +66,16 @@ public class BST<Key extends Comparable<Key>, Value> {
     /**
      * 向以 node 为根的 BST 中插入 key，val
      *
-     * @param node
      * @param key
      * @param val
      */
-    private void insertLoop(Node node, Key key, Value val) {
-        if (node == null) {
+    private void insertLoop(Key key, Value val) {
+        if (root == null) {
             count++;
-            node = new Node(key, val);
+            root = new Node(key, val);
             return;
         }
+        Node node = root;
         for (Node cur = node; cur != null; ) {
             int cmp = key.compareTo(cur.key);
             if (cmp < 0) {
@@ -353,6 +351,83 @@ public class BST<Key extends Comparable<Key>, Value> {
     }
 
     /**
+     * 在 BST 中找 key 的 floor（小于等于 key 的最大键）
+     * @param key
+     * @return
+     */
+    public Key floor(Key key) {
+        Node node = floor(root, key);
+        if (node == null) {
+            return null;
+        }
+        return node.key;
+    }
+
+    /**
+     * 如果 node.key 等于 key 则返回 node
+     * 否则，如果 key 小于 node.key，则 key 的 floor 一定在 node 的左子树中
+     *      如果 key 大于 node.key，只有当 node.right 中有小于等于 key 的值时，floor 才在 node 的右子树中，
+     *          否则，当前 node 就是 key 的 floor
+     * @param node
+     * @param key
+     * @return
+     */
+    private Node floor(Node node, Key key) {
+        if (node == null) {
+            return null;
+        }
+        int cmp = key.compareTo(node.key);
+        if (cmp == 0) {
+            return node;
+        } else if (cmp < 0) {
+            return floor(node.left, key);
+        }
+        Node t = floor(node.right, key);
+        if (t == null) {
+            return node;
+        } else {
+            return t;
+        }
+    }
+
+    /**
+     * 在 BST 中找 key 的ceil（大于等于 key 的最小键）
+     * @param key
+     * @return
+     */
+    public Key ceil(Key key) {
+        Node node = ceil(root, key);
+        if (node == null) {
+            return null;
+        }
+        return node.key;
+    }
+
+    /**
+     * 将 floor 的左变成右，小于变成大于
+     * @param node
+     * @param key
+     * @return
+     */
+    private Node ceil(Node node, Key key) {
+        if (node == null) {
+            return null;
+        }
+        int cmp = key.compareTo(node.key);
+        if (cmp == 0) {
+            return node;
+        } else if (cmp > 0) {
+            return ceil(node.left, key);
+        }
+        Node t = ceil(node.left, key);
+        if (t == null) {
+            return node;
+        } else {
+            return t;
+        }
+    }
+
+    /**
      * 查找范围在 [lo, hi] 的节点，放在队列中并返回
      * @param lo
      * @param hi
@@ -450,20 +525,57 @@ public class BST<Key extends Comparable<Key>, Value> {
 //        }
 
         // test remove
-        int cnt = N;
-        for (int i = 0; i < N / 2; ++i) {
-            int delKey = (int) (Math.random() * N);
-            if (bst.search(delKey) != null) {
-                cnt--;
+//        int cnt = N;
+//        for (int i = 0; i < N / 2; ++i) {
+//            int delKey = (int) (Math.random() * N);
+//            if (bst.search(delKey) != null) {
+//                cnt--;
+//            }
+//            bst.remove(delKey);
+//            if (bst.search(delKey) != null) {
+//                System.out.println("Remove ERROR!");
+//            }
+//            if (bst.size() != cnt) {
+//                System.out.println("Remove2 ERROR!");
+//                System.out.println(cnt + " " + bst.size());
+//            }
+//        }
+
+        int randomDelCnt = N / 10;
+        for (int i = 0; i < randomDelCnt; ++i) {
+            int idx = (int) (Math.random() * N);
+            bst.remove(idx);
+        }
+        // test floor / ceil
+        for (int i = 0; i < (N - randomDelCnt) / 2; ++i) {
+            Integer floor = bst.floor(i);
+            if (floor == null) {
+                if (i >= bst.minimum().key) {
+                    System.out.println("null floor ERROR!");
+                }
+                continue;
             }
-            bst.remove(delKey);
-            if (bst.search(delKey) != null) {
-                System.out.println("Remove ERROR!");
+            if (bst.search(i) != null) {
+                if (floor != i) System.out.println("exits floor ERROR!");
+            } else {
+                if (floor >= i) System.out.println("floor ERROR!");
             }
-            if (bst.size() != cnt) {
-                System.out.println("Remove2 ERROR!");
-                System.out.println(cnt + " " + bst.size());
+            bst.remove(i);
+        }
+        for (int i = (N - randomDelCnt) / 2; !bst.isEmpty(); ++i) {
+            Integer ceil = bst.ceil(i);
+            if (ceil == null) {
+                if (i <= bst.maximum().key) {
+                    System.out.println("null ceil ERROR!");
+                }
+                continue;
             }
+            if (bst.search(i) != null) {
+                if (ceil != i) System.out.println("exits ceil ERROR!");
+            } else {
+                if (ceil <= i) System.out.println("ceil ERROR!");
+            }
+            bst.remove(i);
         }
     }
 }
