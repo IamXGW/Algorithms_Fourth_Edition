@@ -1,4 +1,4 @@
-package com.iamxgw.st.bst;
+package com.iamxgw.st;
 
 import java.io.FileInputStream;
 import java.util.Vector;
@@ -11,7 +11,7 @@ import java.io.IOException;
 // 文件相关操作
 public class FileOperations {
 
-    // 读取文件名称为filename中的内容，并将其中包含的所有词语放进words中
+    // 读取文件名称为 filename 中的内容，并将其中包含的所有词语放进 words 中
     public static boolean readFile(String filename, Vector<String> words) {
 
         if (filename == null) {
