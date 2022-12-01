@@ -341,8 +341,14 @@ public class BST<Key extends Comparable<Key>, Value> {
             } else {
                 Node successor = new Node(minimum(node.right));
                 ++count;
-                successor.left = node.left;
+                /**
+                 * 这里这两句话写反不会报错，是因为：
+                 * 修改的是 successor 的 left 和 right，并没有改动 node.right 中的最小值的 left 和 right
+                 * 注意，这里的 successor 是使用 new 的方式新建的，并不是 AVLTree 中使用的 minimum 函数的返回值
+                 * AVLTree 中使用的是 minimum 函数的返回值，因此会直接修改 node.right 的最小值的节点
+                 */
                 successor.right = removeMin(node.right);
+                successor.left = node.left;
                 node.left = node.right = null;
                 --count;
                 return successor;

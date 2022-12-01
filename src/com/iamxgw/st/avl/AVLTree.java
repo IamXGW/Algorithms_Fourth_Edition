@@ -253,6 +253,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
 //                ++count;
                 /**
                  * 这两句话顺序不能颠倒，会报错
+                 * 如果修改 successor 的 left 在先，这会改变 node.right 中最小值的结构
                  * https://coding.imooc.com/learn/questiondetail/gDANwPN0l91XK120.html
                  */
                 successor.right = remove(node.right, successor.key);
